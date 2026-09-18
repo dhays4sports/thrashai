@@ -1,0 +1,9 @@
+{
+  "name": "thrashai-v0.7.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/runner-smoke.mjs",
+    "check": "node --check app.js && node --check functions/api/thrash.js && node --check functions/_lib/report-store.js && node --check public-report.js && node --check public-agent.js && node --check pit.js"
+  }
+}
