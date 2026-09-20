@@ -1,3 +1,25 @@
+# THRASH v0.10.0 — Control API v1
+
+**Thrash it before you ship it.**
+
+V0.10 adds the stable control plane required for the Muse connector and other agent-native clients.
+
+- authorized target registry with opaque target IDs
+- encrypted adapter credentials at rest
+- asynchronous run objects
+- report / failure / replay resources
+- build-to-build comparison
+- CLEAR / REVIEW / HOLD deployment gates
+- first-class General and Mesh profiles
+- versioned /api/v1 surface
+- OpenAPI discovery endpoint
+
+The connector never needs to handle a saved target's adapter URL or bearer token.
+
+See docs/api-v1.md and docs/muse-connector-v1.md.
+
+---
+
 # THRASH v0.9.0 — Mesh Profile 1.0
 
 **Thrash it before you ship it.**

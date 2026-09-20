@@ -1,8 +1,10 @@
+
 export function onRequestGet(context) {
   const persistence = Boolean(context.env?.THRASH_REPORTS && context.env?.REPORT_SIGNING_KEY);
+  const control = Boolean(context.env?.THRASH_REPORTS && context.env?.REPORT_SIGNING_KEY && context.env?.THRASH_CONTROL_TOKEN);
   return new Response(JSON.stringify({
     ok: true,
-    version: '0.9.0',
+    version: '0.10.0',
     protocol: 'thrash-adapter/0.7',
     sandbox: true,
     stateful: true,
@@ -15,6 +17,9 @@ export function onRequestGet(context) {
     regression_memory: true,
     mesh_profile: true,
     mesh_profile_version: '1.0',
+    control_api: true,
+    control_api_version: 'v1',
+    control_api_configured: control,
     public_reports: persistence
   }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 }

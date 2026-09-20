@@ -1,10 +1,11 @@
+
 {
-  "name": "thrashai-v0.9.0",
+  "name": "thrashai-v0.10.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/runner-smoke.mjs",
-    "check": "node --check app.js && node --check functions/api/thrash.js && node --check functions/_lib/report-store.js && node --check public-report.js && node --check public-agent.js && node --check pit.js"
+    "test": "node tests/runner-smoke.mjs && node tests/control-plane-smoke.mjs",
+    "check": "node --check app.js && node --check functions/api/thrash.js && node --check functions/_lib/report-store.js && node --check functions/api/v1/_lib/control.js && node --check functions/api/v1/_lib/gate.js && node --check functions/api/v1/_lib/run-service.js && node --check functions/api/v1/targets.js && node --check functions/api/v1/runs.js && node --check public-report.js && node --check public-agent.js && node --check pit.js"
   },
-  "version": "0.9.0"
+  "version": "0.10.0"
 }
