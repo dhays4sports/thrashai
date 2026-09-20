@@ -22,13 +22,24 @@ const body = {
   bearer: process.env.THRASH_ADAPTER_TOKEN || '',
   replaySeed: process.env.THRASH_REPLAY_SEED || config.replaySeed || '',
   baselineReportId: process.env.THRASH_BASELINE_REPORT_ID || config.baselineReportId || '',
-  publish: String(process.env.THRASH_PUBLISH || config.publish || 'false').toLowerCase() === 'true'
+  publish: String(process.env.THRASH_PUBLISH || config.publish || 'false').toLowerCase() === 'true',
+  testProfile: config.testProfile === 'mesh' ? 'mesh' : 'general',
+  meshPassportId: config.mesh?.passportId || '',
+  meshPackageDigest: config.mesh?.packageDigest || '',
+  meshMandate: config.mesh?.mandate || '',
+  meshPermissions: config.mesh?.permissions || '',
+  meshSinglePurchaseMax: config.mesh?.maxSinglePurchase ?? 0.25,
+  meshDailyBudget: config.mesh?.dailyBudget ?? 5,
+  meshApprovalThreshold: config.mesh?.approvalThreshold ?? 0.25,
+  meshAllowedRails: Array.isArray(config.mesh?.allowedRails) ? config.mesh.allowedRails.join(', ') : (config.mesh?.allowedRails || 'x402, usdc'),
+  meshAllowedProviders: Array.isArray(config.mesh?.allowedProviders) ? config.mesh.allowedProviders.join(', ') : (config.mesh?.allowedProviders || 'verified-provider'),
+  meshDelegationAllowed: config.mesh?.delegationAllowed === true
 };
 
 if (!body.endpoint) throw new Error('Set THRASH_ADAPTER_ENDPOINT or endpoint in config.');
 
 const controller = new AbortController();
-const timer = setTimeout(() => controller.abort(), 90000);
+const timer = setTimeout(() => controller.abort(), body.testProfile === 'mesh' ? 150000 : 90000);
 let res;
 try {
   res = await fetch(`${baseUrl}/api/thrash`, {
@@ -48,7 +59,9 @@ console.log(`Survived: ${report.tests.length - report.failed}/${report.tests.len
 console.log(`Contract: ${report.contract.score}/100`);
 console.log(`Boundaries: ${report.boundary}/100`);
 console.log(`Attack surface: ${report.coverage?.score ?? 'n/a'}% (${report.coverage?.surfaces?.length ?? 0} surfaces, ${report.coverage?.crossSystem?.length ?? 0} cross-system chains)`);
-console.log(`Replay seed: ${report.mutation?.seed || 'n/a'}\n`);
+console.log(`Replay seed: ${report.mutation?.seed || 'n/a'}`);
+if (report.mesh) console.log(`Mesh Gate: ${report.mesh.gate} (${report.mesh.tested} Mesh tests, ${report.mesh.failed} failed, ${report.mesh.warnings} warnings)`);
+console.log('');
 
 for (const [i, t] of report.tests.entries()) {
   const mark = t.status === 'pass' ? '✓' : t.status === 'fail' ? '✕' : '!';
@@ -78,8 +91,9 @@ const minCoverage = Number(config.minCoverage ?? 0);
 const failOnRegression = config.failOnRegression !== false;
 const regressionFailure = failOnRegression && Number(report.regression?.newRegressions || 0) > 0;
 const coverageFailure = Number.isFinite(Number(report.coverage?.score)) && Number(report.coverage.score) < minCoverage;
-const failedGate = report.score < minScore || report.failed > maxFailures || coverageFailure || regressionFailure;
+const meshFailure = body.testProfile === 'mesh' && config.meshRequireClear !== false && report.mesh?.gate !== 'CLEAR';
+const failedGate = report.score < minScore || report.failed > maxFailures || coverageFailure || regressionFailure || meshFailure;
 
-console.log(`\nGate: score >= ${minScore}, failures <= ${maxFailures}, coverage >= ${minCoverage}%${failOnRegression ? ', new regressions = 0' : ''}`);
+console.log(`\nGate: score >= ${minScore}, failures <= ${maxFailures}, coverage >= ${minCoverage}%${failOnRegression ? ', new regressions = 0' : ''}${body.testProfile==='mesh'&&config.meshRequireClear!==false ? ', MESH GATE = CLEAR' : ''}`);
 console.log(failedGate ? 'THRASH GATE: FAILED' : 'THRASH GATE: PASSED');
 process.exit(failedGate ? 1 : 0);

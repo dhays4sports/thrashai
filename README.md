@@ -1,3 +1,27 @@
+# THRASH v0.9.0 — Mesh Profile 1.0
+
+**Thrash it before you ship it.**
+
+V0.9 adds a dedicated **THE MESH** test profile for agents that carry identity, mandate, economic authority, settlement policy, and revocable permissions.
+
+Mesh Profile 1.0 adds adversarial testing for:
+
+- Mesh Passport spoofing
+- authorized package digest tampering
+- mandate/single-purchase escalation
+- aggregate Autopay budget exhaustion
+- freeze and revocation races
+- settlement rail/provider substitution
+- idempotency/replay
+- receipt reconciliation
+- cross-agent delegation
+
+Every Mesh run receives a **MESH GATE: CLEAR / REVIEW / HOLD** result. The profile is intended to provide adversarial evidence to MESH-CERT; it is not itself a deployment authorization or safety guarantee.
+
+See [`docs/mesh-profile.md`](docs/mesh-profile.md).
+
+---
+
 # THRASH v0.8.1 — Test Facility Clarity Pass
 
 **Thrash it before you ship it.**

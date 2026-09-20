@@ -52,7 +52,14 @@ $('[data-next]').addEventListener('click', () => {
 });
 $('[data-back]').addEventListener('click', () => setStep(1));
 
-$$('.intensity-card').forEach(card => card.addEventListener('click', () => {
+$('.profile-card').forEach(card => card.addEventListener('click', () => {
+  $('.profile-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  const profile = card.querySelector('input[name="testProfile"]')?.value || 'general';
+  $('#meshContract')?.classList.toggle('hidden', profile !== 'mesh');
+}));
+
+$('.intensity-card').forEach(card => card.addEventListener('click', () => {
   $$('.intensity-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
 }));
@@ -70,6 +77,15 @@ form.addEventListener('submit', async (e) => {
   const data = Object.fromEntries(new FormData(form).entries());
   data.publish = data.runMode === 'live' && data.publish === 'true';
   data.authorized = data.runMode === 'live' && data.authorized === 'true';
+  data.meshDelegationAllowed = data.meshDelegationAllowed === 'true';
+  if(data.testProfile === 'mesh' && (!String(data.meshMandate || '').trim() || !String(data.meshPermissions || '').trim())){
+    showToast('MESH MANDATE + PERMISSIONS REQUIRED');
+    return;
+  }
+  if(data.testProfile === 'mesh' && data.runMode !== 'live'){
+    showToast('MESH PROFILE 1.0 REQUIRES A LIVE TEST ADAPTER');
+    return;
+  }
   if(data.runMode === 'live' && !String(data.endpoint || '').trim()){
     showToast('LIVE ENDPOINT REQUIRED');
     form.elements.endpoint?.focus();
@@ -90,7 +106,7 @@ function hashString(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=st
 function seeded(seed){ let x=seed||123456789; return () => { x ^= x<<13; x ^= x>>>17; x ^= x<<5; return (x>>>0)/4294967296; }; }
 
 function statusSeverity(status){ return status==='fail' ? 2 : status==='warn' ? 1 : 0; }
-function browserBaselineKey(r){ return `thrash:baseline:v06:${hashString(`${r.data.agentName}|${r.data.mission}`).toString(16)}`; }
+function browserBaselineKey(r){ return `thrash:baseline:v06:${hashString(`${r.data.agentName}|${r.data.mission}|${r.data.testProfile||'general'}`).toString(16)}`; }
 function compactBaseline(r){ return { id:r.id, score:r.score, boundary:r.boundary, tests:(r.tests||[]).map(t=>({id:t.id,cat:t.cat,name:t.name,status:t.status,mutation:t.mutation?{variant:t.mutation.variant,seed:t.mutation.seed}:null})) }; }
 function compareLocal(current, baseline){
   const before=new Map((baseline.tests||[]).map(t=>[t.id,t]));
@@ -149,7 +165,7 @@ function auditContract(data){
 function safeReportData(data){
   return {
     agentName:data.agentName||'', mission:data.mission||'', allowed:data.allowed||'', forbidden:data.forbidden||'', approval:data.approval||'',
-    intensity:data.intensity||'hard', runMode:data.runMode||'demo'
+    intensity:data.intensity||'hard', runMode:data.runMode||'demo', testProfile:data.testProfile||'general'
   };
 }
 
@@ -195,7 +211,7 @@ async function beginThrash(data){
   if(data.runMode === 'live'){
     try{
       const ctrl = new AbortController();
-      const timeout = setTimeout(()=>ctrl.abort(), 65000);
+      const timeout = setTimeout(()=>ctrl.abort(), data.testProfile==='mesh' ? 120000 : 65000);
       const res = await fetch('/api/thrash', {
         method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data), signal:ctrl.signal
       });
@@ -220,7 +236,7 @@ async function beginThrash(data){
   const tests = report.tests;
   $('#runTotal').textContent=`/ ${tests.length} THRASHES`;
   let i=0;
-  $('#runState').textContent = report.live ? 'LIVE TARGET // ADAPTIVE HOSTILE WORKSPACE' : 'DEMO RUN // LOCAL';
+  $('#runState').textContent = report.live ? (report.mesh ? 'LIVE TARGET // MESH PROFILE 1.0' : 'LIVE TARGET // ADAPTIVE HOSTILE WORKSPACE') : 'DEMO RUN // LOCAL';
 
   clearInterval(runTimer);
   runTimer = setInterval(()=>{
@@ -258,6 +274,7 @@ function renderReport(r){
   if(r.regression?.baselineId && r.regression.newRegressions>0) flags.unshift({level:'critical',text:`${r.regression.newRegressions} NEW REGRESSION${r.regression.newRegressions===1?'':'S'}`});
   else if(r.regression?.baselineId) flags.unshift({level:'good',text:'REGRESSION CHECK CLEAN'});
   if(r.coverage?.score != null) flags.unshift({level:r.coverage.score>=90?'good':'critical',text:`ATTACK SURFACE ${r.coverage.score}% COVERED`});
+  if(r.mesh) flags.unshift({level:r.mesh.gate==='CLEAR'?'good':'critical',text:`MESH GATE ${r.mesh.gate}`});
   $('#resultFlags').innerHTML=flags.slice(0,10).map(f=>`<span class="flag ${f.level}">${f.text}</span>`).join('');
 
   const coverage=$('#coveragePanel');
@@ -276,6 +293,15 @@ function renderReport(r){
       coverage.className='coverage-panel hidden';
       coverage.innerHTML='';
     }
+  }
+
+  const meshPanel=$('#meshPanel');
+  if(meshPanel){
+    if(r.live && r.mesh){
+      const m=r.mesh, c=m.contract||{};
+      meshPanel.className=`mesh-panel ${String(m.gate||'REVIEW').toLowerCase()}`;
+      meshPanel.innerHTML=`<div class="mesh-panel-head"><span>THE MESH // ADVERSARIAL CERT PROFILE 1.0</span><strong>MESH GATE: ${escapeHtml(m.gate||'REVIEW')}</strong></div><div class="mesh-panel-stats"><div><span>MESH TESTS</span><strong>${Number(m.tested||0)}</strong></div><div><span>FAILED</span><strong>${Number(m.failed||0)}</strong></div><div><span>WARNINGS</span><strong>${Number(m.warnings||0)}</strong></div><div><span>DAILY BUDGET</span><strong>${Number(c.daily_budget||0)}</strong></div></div><div class="mesh-invariants">${(m.invariants||[]).map(x=>`<span>${escapeHtml(x)}</span>`).join('')}</div><p>Passport ${escapeHtml(c.passport_ref||'')} · Package ${escapeHtml(c.package_ref||'')} · Rails ${(c.allowed_rails||[]).map(escapeHtml).join(', ')}</p>`;
+    } else { meshPanel.className='mesh-panel hidden'; meshPanel.innerHTML=''; }
   }
 
   const reg=$('#regressionPanel');
@@ -314,7 +340,7 @@ function renderReport(r){
   const disclosure = $('#resultDisclosure');
   if(disclosure){
     disclosure.textContent = r.live
-      ? 'LIVE HOSTILE WORKSPACE: Thrash executed the agent’s requested tool calls across isolated fake services and judged resulting state plus the final response. V0.7 adds virtualized declared-tool probes and failure minimization to the adaptive, mutated adversarial report. It is not a safety guarantee or compliance certification.'
+      ? (r.mesh ? 'LIVE MESH PROFILE 1.0: Thrash exercised synthetic Passport, package, mandate, budget, freeze/revocation, settlement, idempotency, receipt, and delegation boundaries in addition to the hostile workspace. MESH GATE is adversarial evidence, not a guarantee or compliance certification.' : 'LIVE HOSTILE WORKSPACE: Thrash executed the agent’s requested tool calls across isolated fake services and judged resulting state plus the final response. It is not a safety guarantee or compliance certification.')
       : 'DEMO RUN: contract findings are computed locally from your inputs. Attack outcomes are deterministic simulations and are not evidence about a connected agent.';
   }
 }

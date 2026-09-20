@@ -187,6 +187,21 @@
         <h2>WHAT IS YOUR AGENT ALLOWED TO DO?</h2>
         <p class="step-sub">Tell Thrash the job, the boundaries, and where a human must approve. These rules become the safety envelope we test against.</p>
 
+        <div class="profile-grid" aria-label="Test profile">
+          <label class="profile-card selected"><input type="radio" name="testProfile" value="general" checked /><span>GENERAL AGENT</span><strong>HOSTILE WORKSPACE</strong><small>Tools · permissions · memory · state · recovery</small></label>
+          <label class="profile-card mesh-profile-card"><input type="radio" name="testProfile" value="mesh" /><span>THE MESH</span><strong>MESH PROFILE 1.0</strong><small>Passport · mandate · budget · settlement · receipts</small></label>
+        </div>
+        <div id="meshContract" class="mesh-contract hidden">
+          <div class="mesh-contract-head"><span>MESH-CERT ADVERSARIAL PROFILE</span><strong>AUTHORITY + ECONOMIC EXECUTION</strong></div>
+          <div class="split"><label>MESH PASSPORT ID<input name="meshPassportId" maxlength="180" placeholder="mesh-passport-..." /></label><label>AUTHORIZED PACKAGE DIGEST<input name="meshPackageDigest" maxlength="220" placeholder="sha256:..." /></label></div>
+          <label>MANDATE<textarea name="meshMandate" rows="3" placeholder="What is this agent authorized to accomplish in The Mesh?"></textarea></label>
+          <label>MESH PERMISSIONS<textarea name="meshPermissions" rows="3" placeholder="Discover capabilities, purchase verified research, settle approved spend..."></textarea></label>
+          <div class="mesh-number-grid"><label>MAX SINGLE PURCHASE<input name="meshSinglePurchaseMax" type="number" min="0" step="0.000001" value="0.25" /></label><label>DAILY BUDGET<input name="meshDailyBudget" type="number" min="0" step="0.000001" value="5" /></label><label>APPROVAL THRESHOLD<input name="meshApprovalThreshold" type="number" min="0" step="0.000001" value="0.25" /></label></div>
+          <div class="split"><label>ALLOWED SETTLEMENT RAILS<input name="meshAllowedRails" value="x402, usdc" placeholder="x402, usdc" /></label><label>ALLOWED PROVIDERS<input name="meshAllowedProviders" value="verified-provider" placeholder="verified-provider, provider-2" /></label></div>
+          <label class="publish-option mesh-delegation"><input type="checkbox" name="meshDelegationAllowed" value="true" /><span><strong>DELEGATION ALLOWED</strong><small>Permit this agent to transfer scoped authority to another Mesh agent.</small></span></label>
+          <p class="mesh-contract-note">Thrash uses these values only to construct synthetic Mesh tests. Public reports use opaque Passport/package references instead of the raw identifiers.</p>
+        </div>
+
         <label>AGENT NAME<input name="agentName" maxlength="60" placeholder="e.g. InboxPilot" required /></label>
         <label>MISSION<textarea name="mission" rows="3" placeholder="What is this agent supposed to accomplish?" required></textarea></label>
         <div class="split">
@@ -278,6 +293,7 @@
 
         <div id="resultFlags" class="result-flags"></div>
         <div id="coveragePanel" class="coverage-panel"></div>
+        <div id="meshPanel" class="mesh-panel hidden"></div>
         <div id="regressionPanel" class="regression-panel"></div>
 
         <div class="results-head"><h3>THRASH LOG</h3><span>SELECT A FAILURE TO REPLAY</span></div>

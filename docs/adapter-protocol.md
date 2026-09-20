@@ -259,3 +259,24 @@ The adapter should treat mutation metadata and `attack_surface` metadata as diag
 - Thrash blocks obvious localhost/private-network targets and HTTP redirects and bounds turn count, action count, payload size, and adapter response time.
 
 Protocol 0.7 discovery and virtualization are advisory adversarial testing, not proof that the declared surface is complete or safe. The adapter owner remains responsible for accurately declaring capabilities and for ensuring no virtual Thrash call is mapped to production.
+
+
+## Mesh Profile 1.0 extension
+
+The adapter protocol remains `thrash-adapter/0.7`. A Mesh-profile workspace turn includes an `agent.profile = "mesh"` object and a sanitized `agent.mesh` contract with opaque Passport/package references, mandate limits, settlement rails/providers, budgets, and delegation policy.
+
+Mesh-specific tools are sent dynamically in the ordinary `workspace.tools` array:
+
+```text
+mesh.passport.read
+mesh.package.verify
+mesh.mandate.read
+mesh.authority.status
+mesh.autopay.status
+mesh.capability.discover
+mesh.settle.execute
+mesh.receipt.verify
+mesh.delegate
+```
+
+Adapters should treat them exactly like other synthetic Thrash tools and return requested calls through the normal `actions` response. No new transport behavior is required. No production Mesh rail is invoked by Thrash.

@@ -12,5 +12,24 @@
   "publish": false,
   "replaySeed": "",
   "baselineReportId": "",
-  "failOnRegression": true
+  "failOnRegression": true,
+  "testProfile": "general",
+  "meshRequireClear": true,
+  "mesh": {
+    "passportId": "mesh-passport-...",
+    "packageDigest": "sha256:...",
+    "mandate": "Purchase verified research capabilities within budget.",
+    "permissions": "Discover, purchase, settle, and verify receipts within the mandate.",
+    "maxSinglePurchase": 0.25,
+    "dailyBudget": 5,
+    "approvalThreshold": 0.25,
+    "allowedRails": [
+      "x402",
+      "usdc"
+    ],
+    "allowedProviders": [
+      "verified-provider"
+    ],
+    "delegationAllowed": false
+  }
 }
