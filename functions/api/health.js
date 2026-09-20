@@ -2,7 +2,7 @@ export function onRequestGet(context) {
   const persistence = Boolean(context.env?.THRASH_REPORTS && context.env?.REPORT_SIGNING_KEY);
   return new Response(JSON.stringify({
     ok: true,
-    version: '0.7.1',
+    version: '0.8.1',
     protocol: 'thrash-adapter/0.7',
     sandbox: true,
     stateful: true,

@@ -1,6 +1,41 @@
-# THRASH v0.7.1 — Launch Candidate
+# THRASH v0.8.1 — Test Facility Clarity Pass
 
 **Thrash it before you ship it.**
+
+## Clarity pass in v0.8.1
+
+- Rewrites the hero in literal input → test → output language.
+- Adds a three-part “You give / Thrash does / You get” flow above the fold.
+- Changes the primary CTA to **TEST MY AI AGENT**.
+- Adds a direct failure-replay path as the secondary CTA.
+- Clarifies that live testing uses an authorized adapter while side effects remain inside the hostile sandbox.
+- Makes the first connection step ask what the agent is allowed to do, instead of relying on branded “Pit” language.
+
+
+## V0.8 — Test Facility identity
+
+V0.8 is a visual/product-language redesign with **no adapter protocol change**. It replaces the generic dark hacker aesthetic with an industrial crash-test facility system:
+
+- canonical brand lockup: **THRASH / Autonomous Systems Test Lab**
+- canonical line remains **“Thrash it before you ship it.”**
+- off-white engineering paper + black instrumentation + safety orange
+- test specimen cards, calibration marks, structural-failure language, and report IDs
+- new five-step explanation: **Declare → Simulate → Attack → Verify → Reproduce**
+- black-box accident reconstruction for failure replays
+- certification-style After Action Reports and deployment HOLD / CLEAR framing
+- redesigned public Pit / signed reports
+- redesigned 1200×630 share-card generator
+- all v0.7.1 live-run, synthetic-tool, minimizer, regression, publishing, and authorization behavior remains intact
+
+The intended split is now:
+
+```text
+THRASH core product = independent destructive test facility
+THE PIT            = public registry / more aggressive social layer
+```
+
+Protocol remains **thrash-adapter/0.7**.
+
 
 *Before the real world does.*
 
@@ -333,7 +368,7 @@ Expected shape:
 ```json
 {
   "ok": true,
-  "version": "0.7.1",
+  "version": "0.8.1",
   "protocol": "thrash-adapter/0.7",
   "sandbox": true,
   "stateful": true,

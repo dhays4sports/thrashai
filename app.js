@@ -363,25 +363,31 @@ function fitText(ctx,text,maxWidth,startSize,minSize=24){
 function makeShareCard(r){
   const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=630;
   const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,1200,630);
-  ctx.fillStyle='#d7ff35';ctx.fillRect(0,0,16,630);
-  ctx.fillStyle='#171717';ctx.fillRect(58,50,1080,530);
-  ctx.strokeStyle=r.failed?'#ff493b':'#d7ff35';ctx.lineWidth=3;ctx.strokeRect(58,50,1080,530);
-  ctx.fillStyle='#d7ff35';ctx.font='700 24px monospace';ctx.fillText('THRASH // AFTER ACTION REPORT',96,102);
-  ctx.fillStyle='#73736f';ctx.font='700 18px monospace';ctx.fillText(r.live?'LIVE STATEFUL SANDBOX':'DEMO // SIMULATED ATTACKS',96,140);
+  const paper='#f1efe8',ink='#171713',muted='#6c6d67',orange='#ff5a1f',red='#b52d22',green='#3f664b';
+  ctx.fillStyle=paper;ctx.fillRect(0,0,1200,630);
+  ctx.strokeStyle=ink;ctx.lineWidth=3;ctx.strokeRect(38,34,1124,562);
+  ctx.fillStyle=ink;ctx.fillRect(38,34,1124,52);
+  ctx.fillStyle=paper;ctx.font='700 20px monospace';ctx.fillText('THRASH / AUTONOMOUS SYSTEMS TEST LAB',66,67);
+  ctx.textAlign='right';ctx.fillText(r.live?'LIVE CRASH TEST':'DEMO TEST RECORD',1130,67);ctx.textAlign='left';
+  ctx.fillStyle=orange;ctx.fillRect(38,86,1124,12);
+  ctx.fillStyle=muted;ctx.font='700 16px monospace';ctx.fillText('AFTER ACTION REPORT',68,140);
   const name=String(r.data.agentName||'AGENT').toUpperCase();
-  ctx.fillStyle='#f3f3ee';const nameSize=fitText(ctx,name,650,58,30);ctx.font=`900 ${nameSize}px Arial, sans-serif`;ctx.fillText(name,96,220);
-  ctx.fillStyle=r.score>=80?'#d7ff35':r.score>=60?'#ffc62f':'#ff493b';ctx.font='900 190px Arial, sans-serif';ctx.fillText(String(r.score),82,425);
-  ctx.fillStyle='#72726e';ctx.font='700 28px monospace';ctx.fillText('/100',350,420);
-  ctx.fillStyle='#f3f3ee';const labelSize=fitText(ctx,String(r.label||''),570,46,26);ctx.font=`900 ${labelSize}px Arial, sans-serif`;ctx.fillText(String(r.label||''),500,325);
-  ctx.fillStyle='#9b9b96';ctx.font='700 21px monospace';ctx.fillText(`SURVIVED ${r.tests.length-r.failed}/${r.tests.length}`,500,377);
-  ctx.fillText(`CONTRACT ${r.contract.score}/100`,500,416);
-  ctx.fillText(`BOUNDARIES ${r.boundary}/100`,500,455);
-  if(r.coverage?.score!=null){ctx.fillStyle='#9b9b96';ctx.font='700 18px monospace';ctx.fillText(`ATTACK SURFACE ${r.coverage.score}%`,500,485);}
-  if(r.regression?.baselineId){ctx.fillStyle=r.regression.newRegressions?'#ff493b':'#d7ff35';ctx.font='900 18px monospace';ctx.fillText(`REGRESSIONS ${r.regression.newRegressions||0}   SCORE Δ ${(r.regression.scoreDelta||0)>0?'+':''}${r.regression.scoreDelta||0}`,500,r.coverage?.score!=null?510:486);}
-  ctx.fillStyle='#ff493b';ctx.font='900 22px monospace';ctx.fillText(r.failed?`${r.failed} BOUNDARY BREAK${r.failed===1?'':'S'} FOUND`:'NO BOUNDARY BREAKS OBSERVED',500,510);
-  ctx.fillStyle='#d7ff35';ctx.font='900 25px monospace';ctx.fillText('THRASH IT BEFORE YOU SHIP IT.',96,548);
-  ctx.fillStyle='#f3f3ee';ctx.font='700 22px monospace';ctx.textAlign='right';ctx.fillText('thrashai.com',1098,548);ctx.textAlign='left';
+  ctx.fillStyle=ink;const nameSize=fitText(ctx,name,740,70,34);ctx.font=`900 ${nameSize}px Arial, sans-serif`;ctx.fillText(name,66,220);
+  ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(66,250);ctx.lineTo(1132,250);ctx.stroke();
+  ctx.fillStyle=muted;ctx.font='700 14px monospace';ctx.fillText('THRASH SCORE',68,290);
+  ctx.fillStyle=ink;ctx.font='900 190px Arial, sans-serif';ctx.fillText(String(r.score),58,465);
+  ctx.fillStyle=muted;ctx.font='700 26px monospace';ctx.fillText('/100',337,451);
+  const outcomeColor=r.failed?red:green;
+  ctx.fillStyle=outcomeColor;ctx.font='900 50px Arial, sans-serif';ctx.fillText(r.failed?'BOUNDARY FAILURE':'SURVIVED',500,338);
+  ctx.fillStyle=ink;ctx.font='700 19px monospace';ctx.fillText(`SURVIVED ${r.tests.length-r.failed}/${r.tests.length}`,500,385);
+  ctx.fillText(`BOUNDARIES ${r.boundary}/100`,500,423);
+  ctx.fillText(`CONTRACT ${r.contract.score}/100`,500,461);
+  if(r.coverage?.score!=null)ctx.fillText(`ATTACK SURFACE ${r.coverage.score}%`,500,499);
+  ctx.fillStyle=outcomeColor;ctx.fillRect(924,284,178,178);ctx.strokeStyle=paper;ctx.lineWidth=4;ctx.strokeRect(938,298,150,150);
+  ctx.fillStyle=paper;ctx.textAlign='center';ctx.font='900 30px Arial, sans-serif';ctx.fillText(r.failed?'FAILED':'TESTED',1013,365);ctx.font='700 15px monospace';ctx.fillText(r.failed?'DO NOT SHIP':'REPORT VERIFIED',1013,397);ctx.textAlign='left';
+  ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(66,525);ctx.lineTo(1132,525);ctx.stroke();
+  ctx.fillStyle=ink;ctx.font='900 24px monospace';ctx.fillText('THRASH IT BEFORE YOU SHIP IT.',68,563);
+  ctx.fillStyle=muted;ctx.font='700 15px monospace';ctx.textAlign='right';ctx.fillText(`thrashai.com  •  ${r.mutation?.seed?`SEED ${r.mutation.seed}`:'TEST RECORD'}`,1132,563);ctx.textAlign='left';
   return canvas;
 }
 $('#shareCard').addEventListener('click', async()=>{
